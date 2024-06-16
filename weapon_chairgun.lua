@@ -1,6 +1,6 @@
-SWEP.PrintName = "Chair Thrower" -- This will be shown in the spawn menu, and in the weapon selection menu
+SWEP.PrintName = "Pistola sandias-sillas" -- This will be shown in the spawn menu, and in the weapon selection menu
 SWEP.Author	= "SuperAtaque" -- These two options will be shown when you have the weapon highlighted in the weapon selection menu
-SWEP.Instructions = "Left mouse to fire a chair!"
+SWEP.Instructions = "Click izquierdo sandias - derecho sillas"
 
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
@@ -27,7 +27,8 @@ SWEP.DrawCrosshair = true
 SWEP.ViewModel	= "models/weapons/v_pistol.mdl"
 SWEP.WorldModel	= "models/weapons/w_pistol.mdl"
 
-SWEP.ShootSound = Sound( "Metal.SawbladeStick" )
+-- Se inicializa a null para que se cree el sonido después
+SWEP.ShootSound = null
 
 -- Called when the left mouse button is pressed
 function SWEP:PrimaryAttack()
@@ -35,9 +36,8 @@ function SWEP:PrimaryAttack()
 	-- the rate of fire. Here we set it to shoot every 0.5 seconds.
 	self:SetNextPrimaryFire( CurTime() + 0.5 )	
 
-	-- Call 'ThrowChair' on self with this model
-	self:ThrowChair( "models/props_junk/watermelon01.mdl" )
 	self.ShootSound = Sound( "Metal.SawbladeStick" )
+	self:ThrowObject( "models/props_junk/watermelon01.mdl" )
 end
  
 
@@ -47,19 +47,19 @@ function SWEP:SecondaryAttack()
 	-- players shouldn't be able to fire too fast
 	self:SetNextSecondaryFire( CurTime() + 0.1 )
 
-	self:ThrowChair( "models/props_c17/FurnitureChair001a.mdl" )
-	self.ShootSound = Sound( "Metal." )
+	self.ShootSound = Sound( "WaterExplosionEffect.Sound" )
+	self:ThrowObject( "models/props_c17/FurnitureChair001a.mdl" )
 end
 
 -- A custom function we added. When you call this the player will fire a chair!
-function SWEP:ThrowChair( model_file )
+function SWEP:ThrowObject( model_file )
 	local owner = self:GetOwner()
-
-	-- Make sure the weapon is being held before trying to throw a chair
-	if ( not owner:IsValid() ) then return end
 
 	-- Play the shoot sound we precached earlier!
 	self:EmitSound( self.ShootSound )
+
+	-- Make sure the weapon is being held before trying to throw a chair
+	if ( not owner:IsValid() ) then return end
  
 	-- If we're the client then this is as much as we want to do.
 	-- We play the sound above on the client due to prediction.
@@ -116,5 +116,5 @@ function SWEP:ThrowChair( model_file )
 	-- A lot of items can clutter the workspace.
 	-- To fix this we add a 10 second delay to remove the chair after it was spawned.
 	-- ent:IsValid() checks if the item still exists before removing it, eliminating errors.
-	timer.Simple( 10, function() if ent and ent:IsValid() then ent:Remove() end end )
+	-- timer.Simple( 10, function() if ent and ent:IsValid() then ent:Remove() end end )
 end
